@@ -14,8 +14,13 @@
     <hr>
 
     <h2>Search Photos</h2>
-    <input type="text" id="searchQuery" placeholder="Search for dog, cat, pet...">
+    <input id="searchQuery" type="text" placeholder="Search for dog, cat, pet" />
     <button onclick="searchPhotos()">Search</button>
+    
+    <hr>
+    
+    <!-- Add this div if it’s missing -->
+    <div id="searchResults"></div>
     <script src="sdk/lib/axios/dist/axios.standalone.js"></script>
 
     <!-- 2. CryptoJS core + SHA256 + helpers -->
