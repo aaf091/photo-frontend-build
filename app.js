@@ -70,22 +70,28 @@
 // }
 const API_KEY = "zp0No7LQ9W4pzlZm3lGSg9NqOdh5c3WVa8whcEHC";
 
-// Create a new API client instance using API key auth
 function makeClient() {
-  if (typeof apigClientFactory === "undefined") {
-    console.error("apigClientFactory is not defined. Check your <script> order.");
-    alert("Client SDK not loaded – see console.");
-    return null;
-  }
-
   return apigClientFactory.newClient({
-    apiKey: API_KEY
-    // No IAM creds needed – we’re using API key auth only
+    apiKey: API_KEY,
+  });
+}
+
+// helper: convert a File to base64 (without the data:... prefix)
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result; // "data:image/jpeg;base64,AAAA..."
+      const base64 = String(result).split(",")[1]; // drop the prefix
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
 
 // --------------------------
-// UPLOAD PHOTO  (PUT /v1/upload)
+// UPLOAD PHOTO (PUT /v1/upload) – now sends JSON {image_data, content_type}
 // --------------------------
 async function uploadPhoto() {
   const fileInput = document.getElementById("fileInput");
@@ -94,26 +100,31 @@ async function uploadPhoto() {
     return;
   }
 
-  const client = makeClient();
-  if (!client) return;
-
   const file = fileInput.files[0];
-
-  const params = {};           // no path or query params
-  const body = file;           // raw file as body
-  const additionalParams = {
-    headers: {
-      "Content-Type": file.type
-      // x-api-key is added automatically by the SDK
-    }
-  };
+  const client = makeClient();
 
   try {
+    // 1) convert file to base64 string
+    const base64Data = await fileToBase64(file);
+
+    // 2) JSON payload for Lambda
+    const body = JSON.stringify({
+      image_data: base64Data,
+      content_type: file.type || "application/octet-stream",
+    });
+
+    const params = {}; // no path/query params
+    const additionalParams = {
+      headers: {
+        "Content-Type": "application/json",
+        // x-api-key is handled by the SDK via apiKey
+      },
+    };
+
     const result = await client.v1UploadPut(params, body, additionalParams);
-    // Assuming Lambda returns { key: "..." }
-    const key = result && result.data && result.data.key;
+
     document.getElementById("uploadResult").innerText =
-      key ? `Uploaded key: ${key}` : "Upload succeeded.";
+      `Uploaded key: ${result.data.key}`;
   } catch (err) {
     console.error("Upload error:", err);
     alert("Upload failed – see console for details.");
