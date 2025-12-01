@@ -141,23 +141,21 @@ async function searchPhotos() {
     return;
   }
 
-  const client = makeClient();
-  if (!client) return;
-
-  const params = { q: query }; // becomes ?q=query
-  const body = null;           // GET has no body
-  const additionalParams = {
-    headers: {
-      // x-api-key is added automatically
-    }
-  };
-
   const container = document.getElementById("searchResults");
+  if (!container) {
+    console.error("searchResults div not found in DOM");
+    return;
+  }
   container.innerHTML = "";
+
+  const client = makeClient();
+  const params = { q: query };
+  const body = {};
+  const additionalParams = { headers: {} };
 
   try {
     const result = await client.v1SearchGet(params, body, additionalParams);
-    const data = result && result.data ? result.data : {};
+    const data = result.data;
 
     if (!data.results || data.results.length === 0) {
       container.innerHTML = "<p>No results found.</p>";
@@ -170,7 +168,7 @@ async function searchPhotos() {
       img.width = 200;
 
       const p = document.createElement("p");
-      p.innerText = "Labels: " + (photo.labels || []).join(", ");
+      p.innerText = "Labels: " + photo.labels.join(", ");
 
       container.appendChild(img);
       container.appendChild(p);
@@ -178,12 +176,9 @@ async function searchPhotos() {
     });
   } catch (err) {
     console.error("Search error:", err);
-
     const msg =
       (err.response && err.response.data && JSON.stringify(err.response.data)) ||
-      err.message ||
       err.toString();
-
     container.innerHTML = `<p>Search failed: ${msg}</p>`;
   }
 }
