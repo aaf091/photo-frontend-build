@@ -18,16 +18,21 @@
     <button onclick="searchPhotos()">Search</button>
     <script src="sdk/lib/axios/dist/axios.standalone.js"></script>
 
+    <!-- 2. CryptoJS core + SHA256 + helpers -->
+    <script src="sdk/lib/CryptoJS/rollups/crypto-js.js"></script>
     <script src="sdk/lib/CryptoJS/rollups/sha256.js"></script>
     <script src="sdk/lib/CryptoJS/components/hmac.js"></script>
     <script src="sdk/lib/CryptoJS/components/enc-base64.js"></script>
-
+    
+    <!-- 3. URL template helper -->
     <script src="sdk/lib/url-template/url-template.js"></script>
-
+    
+    <!-- 4. API Gateway core libs -->
     <script src="sdk/lib/apiGatewayCore/sigV4Client.js"></script>
     <script src="sdk/lib/apiGatewayCore/apiGatewayClient.js"></script>
     <script src="sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
     <script src="sdk/lib/apiGatewayCore/utils.js"></script>
+
 
     <!-- Generated client wrapper -->
     <script src="sdk/apigClient.js"></script>
