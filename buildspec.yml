@@ -1,13 +1,10 @@
 version: 0.2
-
 phases:
-  install:
-    commands:
-      - echo "No dependencies"
   build:
     commands:
-      - echo "Frontend build complete"
-
+      - echo "No build step; just passing through static files"
 artifacts:
   files:
-    - '**/*'
+    - index.html
+    - app.js
+    - sdk/**/*
